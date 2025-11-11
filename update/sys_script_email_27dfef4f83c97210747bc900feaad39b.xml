@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_email">
+    <sys_script_email action="INSERT_OR_UPDATE">
+        <name>CountOverdueNeedItTasksAssignedTo</name>
+        <new_lines_to_html>false</new_lines_to_html>
+        <script><![CDATA[(function runMailScript(/* GlideRecord */ current, /* TemplatePrinter */ template,
+          /* Optional EmailOutbound */ email, /* Optional GlideRecord */ email_action,
+          /* Optional GlideRecord */ event) {
+
+    var rightNow = new GlideDateTime();
+    var closed = 3; // Assuming '3' is the value for 'Closed' state
+    var gr = new GlideRecord('x_58872_needit_needit_task');
+    gr.addQuery('assigned_to', current.assigned_to);
+    gr.addQuery('state', '<', closed);
+    gr.addQuery('due_date', '<=', rightNow);
+    gr.query();
+    var count = gr.getRowCount();
+
+    template.print("In addition to this overdue NeedIt Task, you have " + (count - 1) + " more overdue NeedIt Tasks.");
+    
+})(current, template, email, email_action, event);]]></script>
+        <sys_class_name>sys_script_email</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-11-11 11:14:32</sys_created_on>
+        <sys_id>27dfef4f83c97210747bc900feaad39b</sys_id>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_name>CountOverdueNeedItTasksAssignedTo</sys_name>
+        <sys_package display_value="NeedIt" source="x_58872_needit">6ead8e780f603200cd674f8ce1050ed1</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="NeedIt">6ead8e780f603200cd674f8ce1050ed1</sys_scope>
+        <sys_update_name>sys_script_email_27dfef4f83c97210747bc900feaad39b</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-11-11 11:16:42</sys_updated_on>
+    </sys_script_email>
+    <sys_es_latest_script action="INSERT_OR_UPDATE">
+        <id>27dfef4f83c97210747bc900feaad39b</id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-11-11 11:14:32</sys_created_on>
+        <sys_id>6300338f83c97210747bc900feaad3a5</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-11-11 11:14:32</sys_updated_on>
+        <table>sys_script_email</table>
+        <use_es_latest>true</use_es_latest>
+    </sys_es_latest_script>
+</record_update>
