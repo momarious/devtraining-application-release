@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ws_operation">
+    <sys_ws_operation action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <consumes>application/json</consumes>
+        <consumes_customized>false</consumes_customized>
+        <default_operation_uri>/api/x_58872_needit/needit_api/nigetinfo/{user_name}</default_operation_uri>
+        <enforce_acl/>
+        <http_method>GET</http_method>
+        <name>ni_getinfo</name>
+        <operation_script><![CDATA[(function process(/*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+
+    var userName = request.pathParams.user_name;
+    var query = request.queryParams.ni_query;
+
+    gs.info('NI Get Info Operation Script called for user: ' + userName + ' with query: ' + query, 'NI_GetInfo');
+
+    var userRecord = new GlideRecord('sys_user');
+    userRecord.get('user_name', userName);
+
+    var activeNeeditCount = new GlideAggregate('x_58872_needit_needit');
+    activeNeeditCount.addAggregate('COUNT');
+    activeNeeditCount.addQuery('u_requested_for', userRecord.sys_id);
+    activeNeeditCount.addEncodedQuery(query); // 'active=true'
+    activeNeeditCount.groupBy('u_request_type');
+    activeNeeditCount.query();
+
+    var needitRecords = 0;
+    var userNeeditRecords = [];
+    var needitRecordsCount = 0;
+
+    while (activeNeeditCount.next()) {
+        needitRecords = activeNeeditCount.getAggregate('COUNT');
+        var requestType = activeNeeditCount.u_request_type.getDisplayValue();
+        userNeeditRecords.push({
+            'RequestType': requestType,
+            'NeeditCount': needitRecords
+        });
+        needitRecordsCount += parseInt(needitRecords, 10);
+    }
+
+    var body = {
+        totalNeeditCount: needitRecordsCount,
+        needitByRequestType: userNeeditRecords,
+        user: {
+            'UserName': userRecord.user_name,
+            'UserID': userRecord.sys_id
+        }
+    };
+
+    response.setBody(body);
+
+
+})(request, response);]]></operation_script>
+        <operation_uri>/api/x_58872_needit/v1/needit_api/nigetinfo/{user_name}</operation_uri>
+        <produces>application/json,application/xml,text/xml</produces>
+        <produces_customized>false</produces_customized>
+        <relative_path>/nigetinfo/{user_name}</relative_path>
+        <request_example/>
+        <requires_acl_authorization>true</requires_acl_authorization>
+        <requires_authentication>true</requires_authentication>
+        <requires_snc_internal_role>true</requires_snc_internal_role>
+        <short_description>Find the active NeedIt records for a user. Group by What needed.</short_description>
+        <sys_class_name>sys_ws_operation</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-11-12 14:36:38</sys_created_on>
+        <sys_id>cfc7a12b83053210747bc900feaad39b</sys_id>
+        <sys_mod_count>24</sys_mod_count>
+        <sys_name>ni_getinfo</sys_name>
+        <sys_package display_value="NeedIt" source="x_58872_needit">6ead8e780f603200cd674f8ce1050ed1</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="NeedIt">6ead8e780f603200cd674f8ce1050ed1</sys_scope>
+        <sys_update_name>sys_ws_operation_cfc7a12b83053210747bc900feaad39b</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-11-12 17:08:35</sys_updated_on>
+        <web_service_definition display_value="NeedIt API">8e361d6383c13210747bc900feaad3cf</web_service_definition>
+        <web_service_version display_value="v1">56390a2f83853210747bc900feaad32a</web_service_version>
+    </sys_ws_operation>
+    <sys_es_latest_script action="INSERT_OR_UPDATE">
+        <id>cfc7a12b83053210747bc900feaad39b</id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-11-12 14:36:38</sys_created_on>
+        <sys_id>4ae7a12b83053210747bc900feaad3a2</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-11-12 14:36:38</sys_updated_on>
+        <table>sys_ws_operation</table>
+        <use_es_latest>true</use_es_latest>
+    </sys_es_latest_script>
+</record_update>
